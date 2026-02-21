@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flow Guardian X | Urban Intelligence Command</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="../static/style.css" />
+</head>
+
+<body>
+    <!-- Animated background particles -->
+    <div class="bg-grid"></div>
+
+    <div class="uic-shell">
+        <!-- ── HEADER ── -->
+        <header class="uic-header">
+            <div class="header-brand">
+                <span class="brand-icon">🌐</span>
+                <div>
+                    <h1>Urban Intelligence <span class="glow">Command</span></h1>
+                    <p class="sub">Flow Guardian X · Predictive Traffic Intelligence Platform</p>
+                </div>
+            </div>
+            <div class="header-status">
+                <span class="pulse-dot"></span>
+                <span id="sys-status">SYSTEM LIVE</span>
+                <span class="badge-lag">Lag: <b id="lag-ms">—</b></span>
+            </div>
+        </header>
+
+        <!-- ── TICKER BAR ── -->
+        <div class="ticker-bar">
+            <div class="ticker-item"><span>🟢 Sector A-B</span><span id="tick-ab">Stable</span></div>
+            <div class="ticker-item"><span>🔴 Sector B-C</span><span id="tick-bc">Unstable</span></div>
+            <div class="ticker-item"><span>🟡 Sector A-D</span><span id="tick-ad">Meta-Stable</span></div>
+            <div class="ticker-item"><span>🟢 Sector D-C</span><span id="tick-dc">Stable</span></div>
+            <div class="ticker-item"><span>🕒 Last Sync:</span><span id="tick-time">—</span></div>
+        </div>
+
+        <!-- ── MAIN GRID ── -->
+        <main class="uic-main">
+
+            <!-- PANEL 1: Regime Heatmap -->
+            <section class="card card-heatmap">
+                <div class="card-header">
+                    <h2>Regime Heatmap</h2>
+                    <span class="card-badge">LIVE</span>
+                </div>
+                <div class="heatmap-legend">
+                    <span class="leg stable">■ Stable</span>
+                    <span class="leg meta">■ Meta-Stable</span>
+                    <span class="leg unstable">■ Unstable / Collapse</span>
+                </div>
+                <div class="heatmap-grid" id="heatmapGrid"></div>
+            </section>
+
+            <!-- PANEL 2: Optimization Radar -->
+            <section class="card card-radar">
+                <div class="card-header">
+                    <h2>Optimization Radar</h2>
+                    <span class="card-badge">α · β · γ</span>
+                </div>
+                <div class="radar-wrap">
+                    <canvas id="radarChart"></canvas>
+                </div>
+                <div class="radar-legend">
+                    <div class="rl-item"><span class="rl-dot delay"></span>α Delay Weight: <b id="alpha-val">0.60</b>
+                    </div>
+                    <div class="rl-item"><span class="rl-dot emit"></span>β Emission Weight: <b id="beta-val">0.20</b>
+                    </div>
+                    <div class="rl-item"><span class="rl-dot risk"></span>γ Risk Weight: <b id="gamma-val">0.20</b>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL 3: Live Prediction Feed -->
+            <section class="card card-predict">
+                <div class="card-header">
+                    <h2>Live Prediction Feed</h2>
+                    <span class="card-badge">ML Model</span>
+                </div>
+                <div class="predict-inputs">
+                    <label>Vehicles <input type="number" id="p-vehicles" value="50" min="1" max="200" /></label>
+                    <label>Speed (kmph) <input type="number" id="p-speed" value="35" min="1" max="120" /></label>
+                    <label>Capacity <input type="number" id="p-capacity" value="100" min="10" max="300" /></label>
+                    <label>Rain (mm/hr) <input type="number" id="p-rain" value="0" min="0" max="100" /></label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="p-accident" /> Accident
+                    </label>
+                </div>
+                <button class="btn-predict" onclick="runPrediction()">▶ Run Prediction</button>
+                <div class="predict-results" id="predictResults">
+                    <div class="result-row"><span>Predicted Delay</span><b id="res-delay">— mins</b></div>
+                    <div class="result-row"><span>Confidence</span><b id="res-conf">—%</b></div>
+                    <div class="result-row"><span>Traffic Regime</span><b id="res-regime">—</b></div>
+                    <div class="result-row"><span>Risk Score</span><b id="res-risk">—</b></div>
+                    <div class="result-row"><span>Severity</span><b id="res-severity">—</b></div>
+                    <div class="result-row"><span>Emission Load</span><b id="res-emit">— g/km</b></div>
+                </div>
+            </section>
+
+            <!-- PANEL 4: Routing Engine -->
+            <section class="card card-route">
+                <div class="card-header">
+                    <h2>Route Optimizer</h2>
+                    <span class="card-badge">Dijkstra</span>
+                </div>
+                <div class="route-inputs">
+                    <label>From <select id="r-start">
+                            <option>A</option>
+                            <option>B</option>
+                            <option>A</option>
+                            <option>D</option>
+                        </select></label>
+                    <label>To <select id="r-end">
+                            <option>C</option>
+                            <option>D</option>
+                            <option>B</option>
+                            <option>C</option>
+                        </select></label>
+                    <label class="checkbox-label"><input type="checkbox" id="r-emergency" /> Emergency Mode</label>
+                </div>
+                <button class="btn-route" onclick="runRoute()">🔍 Find Best Route</button>
+                <div class="route-result" id="routeResult">
+                    <div class="result-row"><span>Route</span><b id="res-route">— → —</b></div>
+                    <div class="result-row"><span>Cost Score</span><b id="res-cost">—</b></div>
+                    <div class="result-row"><span>Priority Mode</span><b id="res-priority">NORMAL</b></div>
+                </div>
+            </section>
+
+            <!-- PANEL 5: Chaos Trigger — Black Swan Stress Tester -->
+            <section class="card card-chaos">
+                <div class="card-header">
+                    <h2>⚡ Black Swan Stress-Tester</h2>
+                    <span class="card-badge danger">CHAOS CONTROL</span>
+                </div>
+                <p class="chaos-desc">Simulate a non-historical catastrophic road failure. The Nonlinear Delay Model
+                    will predict the ripple effects that no historical data can anticipate.</p>
+                <div class="chaos-inputs">
+                    <label>Delete Road Segment</label>
+                    <div class="edge-select">
+                        <select id="c-from">
+                            <option>A</option>
+                            <option>B</option>
+                            <option>A</option>
+                            <option>B</option>
+                            <option>D</option>
+                        </select>
+                        <span>→</span>
+                        <select id="c-to">
+                            <option>B</option>
+                            <option>C</option>
+                            <option>D</option>
+                            <option>D</option>
+                            <option>C</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-chaos" id="chaosBtn" onclick="triggerChaos()">
+                    💥 TRIGGER GRID COLLAPSE
+                </button>
+                <div class="chaos-result" id="chaosResult" style="display:none">
+                    <div class="chaos-alert">⚠ CRITICAL: GRID COLLAPSE ACTIVATED</div>
+                    <div class="result-row"><span>Affected Segment</span><b id="c-segment">—</b></div>
+                    <div class="result-row"><span>Ripple Delay (Nonlinear)</span><b id="c-ripple">— mins</b></div>
+                    <div class="result-row"><span>Sector Status</span><b id="c-status" class="unstable-text">—</b></div>
+                    <div class="result-row"><span>Action</span><b id="c-action">—</b></div>
+                    <button class="btn-restore" onclick="restoreGrid()">↺ Restore Network</button>
+                </div>
+            </section>
+
+            <!-- PANEL 6: Emergency Control -->
+            <section class="card card-emergency">
+                <div class="card-header">
+                    <h2>🚨 Emergency Control</h2>
+                    <span class="card-badge">Priority Override</span>
+                </div>
+                <div class="emg-inputs">
+                    <label>Intersection ID <input type="text" id="e-id" value="Int-01" /></label>
+                </div>
+                <button class="btn-emergency" onclick="triggerEmergency()">🚑 ACTIVATE GREEN WAVE</button>
+                <div class="emg-result" id="emergencyResult">
+                    <div class="result-row"><span>Status</span><b id="emg-status">STANDBY</b></div>
+                    <div class="result-row"><span>Actions</span><b id="emg-actions">—</b></div>
+                    <div class="result-row"><span>Priority Level</span><b id="emg-priority">—</b></div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="uic-footer">
+            Flow Guardian X · Urban Intelligence Command · Refresh Cycle: <b id="cycle-ms">1500ms</b> · All systems
+            nominal
+        </footer>
+    </div>
+
+    <script src="../static/uic.js"></script>
+</body>
+
+</html>
